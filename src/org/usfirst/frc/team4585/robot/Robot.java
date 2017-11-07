@@ -1,44 +1,75 @@
 package org.usfirst.frc.team4585.robot;
 
 import edu.wpi.first.wpilibj.SampleRobot;
-import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Timer;
 
-/**
- * This is a demo program showing the use of the RobotDrive class, specifically
- * it contains the code necessary to operate a robot with tank drive.
- *
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the SampleRobot
- * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the manifest file in the resource
- * directory.
- *
- * WARNING: While it may look like a good choice to use for your code if you're
- * inexperienced, don't. Unless you know what you are doing, complex code will
- * be much more difficult under this system. Use IterativeRobot or Command-Based
- * instead if you're new.
- */
 public class Robot extends SampleRobot {
-	RobotDrive myRobot = new RobotDrive(0, 1); // class that handles basic drive
-												// operations
-	Joystick leftStick = new Joystick(0); // set to ID 1 in DriverStation
-	Joystick rightStick = new Joystick(1); // set to ID 2 in DriverStation
+	
+	int driveLPort = 8;
+	int driveRPort = 9;
+	int cannonTriggerPort = 0;
+	int climbPort = 2;
+	
+	int joystickPort = 0;
+	
+	int climbButton = 2;
+	int climbInvertButton = 11;
+	int fireButton = 1;
+	int fireSafetyButton = 3;
+	
+	long time;
+	long startTime;
+	long timeTaken;
+	int millisPerIteration = 5;
+	
+	TankDrive chassis = new TankDrive(driveLPort, driveRPort);
+	Extreme3DPro joy = new Extreme3DPro(joystickPort);
+	//QDSKeyboard keyboard = new QDSKeyboard(joystickPort);
+	Launcher gun = new Launcher(cannonTriggerPort);
+	Climber climber = new Climber(climbPort);
 
 	public Robot() {
-		myRobot.setExpiration(0.1);
+		
 	}
 
-	/**
-	 * Runs the motors with tank steering.
-	 */
+	@Override
+	public void robotInit() {
+	
+	}
+	
+	@Override
+	public void autonomous() {
+	
+	}
+
 	@Override
 	public void operatorControl() {
-		myRobot.setSafetyEnabled(true);
-		while (isOperatorControl() && isEnabled()) {
-			myRobot.tankDrive(leftStick, rightStick);
-			Timer.delay(0.005); // wait for a motor update time
+		time = System.currentTimeMillis();
+		while(isEnabled() & isOperatorControl()) {
+			if (System.currentTimeMillis() >= time + millisPerIteration) {
+				startTime=System.currentTimeMillis();
+				
+				chassis.arcadeDrive(-joy.getZ(), joy.getY());
+				//chassis.arcadeDrive(-keyboard.getAxisAD(), keyboard.getAxisWS());
+				
+				gun.setFiring(joy.getButton(fireButton)&&joy.getButton(fireSafetyButton));
+				
+				climber.setInverted(joy.getButton(climbInvertButton));
+				climber.setSpeed(joy.getThrottle());
+				climber.setClimbing(joy.getButton(climbButton));
+				
+				time = System.currentTimeMillis();
+				
+				timeTaken = time-startTime;
+			}
 		}
 	}
+
+	@Override
+	public void test() {
+		
+	}
 }
+
+
+
+
