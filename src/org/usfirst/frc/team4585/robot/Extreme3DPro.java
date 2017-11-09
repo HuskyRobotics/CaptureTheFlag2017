@@ -4,12 +4,11 @@ import edu.wpi.first.wpilibj.Joystick;
 
 public class Extreme3DPro {
 	
-	private int port;
+	private final int port = 0;
 	
 	Joystick joy;
 	
 	public Extreme3DPro(int port) {
-		this.port = port;
 		joy = new Joystick(port);
 	}
 	

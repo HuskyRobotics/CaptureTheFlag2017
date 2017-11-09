@@ -1,31 +1,22 @@
 package org.usfirst.frc.team4585.robot;
 
 import edu.wpi.first.wpilibj.SampleRobot;
+import org.usfirst.frc.team4585.robot.TankDrive;
 
 public class Robot extends SampleRobot {
-	
+	//DrivePorts
 	int driveLPort = 8;
 	int driveRPort = 9;
-	int cannonTriggerPort = 0;
-	int climbPort = 2;
-	
+	//Joystic
 	int joystickPort = 0;
+	//Claw
 	
-	int climbButton = 2;
-	int climbInvertButton = 11;
-	int fireButton = 1;
-	int fireSafetyButton = 3;
+	//PingPongShooter
 	
-	long time;
-	long startTime;
-	long timeTaken;
-	int millisPerIteration = 5;
 	
+	//Initilization of robot functions
 	TankDrive chassis = new TankDrive(driveLPort, driveRPort);
 	Extreme3DPro joy = new Extreme3DPro(joystickPort);
-	//QDSKeyboard keyboard = new QDSKeyboard(joystickPort);
-	Launcher gun = new Launcher(cannonTriggerPort);
-	Climber climber = new Climber(climbPort);
 
 	public Robot() {
 		
@@ -41,25 +32,20 @@ public class Robot extends SampleRobot {
 	
 	}
 
+	
+	//Loop checking for robot movement
 	@Override
 	public void operatorControl() {
+		long time;
+		final int MILLISPERITERATION = 5;
 		time = System.currentTimeMillis();
 		while(isEnabled() & isOperatorControl()) {
-			if (System.currentTimeMillis() >= time + millisPerIteration) {
-				startTime=System.currentTimeMillis();
+			if (System.currentTimeMillis() >= time + MILLISPERITERATION) {
 				
 				chassis.arcadeDrive(-joy.getZ(), joy.getY());
-				//chassis.arcadeDrive(-keyboard.getAxisAD(), keyboard.getAxisWS());
-				
-				gun.setFiring(joy.getButton(fireButton)&&joy.getButton(fireSafetyButton));
-				
-				climber.setInverted(joy.getButton(climbInvertButton));
-				climber.setSpeed(joy.getThrottle());
-				climber.setClimbing(joy.getButton(climbButton));
 				
 				time = System.currentTimeMillis();
 				
-				timeTaken = time-startTime;
 			}
 		}
 	}
